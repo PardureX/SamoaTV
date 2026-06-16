@@ -7,20 +7,31 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP_BASE = 'https://image.tmdb.org/t/p/original';
 
+// ============================================================
+// DOM REFERENCIAS
+// ============================================================
 const moviesGrid = document.getElementById('moviesGrid');
 const categoryTitle = document.getElementById('categoryTitle');
 const hero = document.getElementById('hero');
 const heroTitle = document.getElementById('heroTitle');
 const heroOverview = document.getElementById('heroOverview');
 const searchInput = document.getElementById('searchInput');
+const searchInputMobile = document.getElementById('searchInputMobile');
 const searchBtn = document.getElementById('searchBtn');
+const searchBtnMobile = document.getElementById('searchBtnMobile');
 const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modalBody');
 const closeModal = document.getElementById('closeModal');
 const navLinks = document.querySelectorAll('.nav a');
+const menuToggle = document.getElementById('menuToggle');
+const navMenu = document.getElementById('navMenu');
+const scrollTopBtn = document.getElementById('scrollTop');
 
 let currentCategory = 'popular';
 
+// ============================================================
+// FUNCIONES DE API
+// ============================================================
 async function fetchWithAuth(url) {
     const response = await fetch(url, {
         headers: {
@@ -65,12 +76,15 @@ async function getMovieDetails(movieId) {
     }
 }
 
+// ============================================================
+// FUNCIONES DE RENDERIZADO
+// ============================================================
 function renderMovies(movies, title = 'Películas') {
     if (!movies || movies.length === 0) {
         moviesGrid.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:60px 0; color:#666;">
-                <i class="fas fa-film" style="font-size:48px; display:block; margin-bottom:15px;"></i>
-                <p>No se encontraron películas</p>
+            <div style="grid-column:1/-1; text-align:center; padding:40px 0; color:#666;">
+                <i class="fas fa-film" style="font-size:36px; display:block; margin-bottom:12px;"></i>
+                <p style="font-size:14px;">No se encontraron películas</p>
             </div>
         `;
         categoryTitle.textContent = title;
@@ -82,7 +96,7 @@ function renderMovies(movies, title = 'Películas') {
     moviesGrid.innerHTML = movies.map(movie => {
         const poster = movie.poster_path 
             ? `${IMG_BASE}${movie.poster_path}` 
-            : 'https://via.placeholder.com/300x450/1a1a1a/666?text=Sin+Imagen';
+            : 'https://via.placeholder.com/300x450/1a1a1a/666?text=No+Image';
         
         const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
         const rating = movie.vote_average ? movie.vote_average.toFixed(1) : '0.0';
@@ -94,7 +108,7 @@ function renderMovies(movies, title = 'Películas') {
                 <div class="movie-info">
                     <h3>${movie.title}</h3>
                     <div class="rating">
-                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star" style="font-size:10px;"></i>
                         <span>${rating}</span>
                     </div>
                 </div>
@@ -107,6 +121,13 @@ function renderMovies(movies, title = 'Películas') {
             const id = card.dataset.id;
             openModal(id);
         });
+        // Feedback táctil para móvil
+        card.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.97)';
+        }, { passive: true });
+        card.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+        }, { passive: true });
     });
 }
 
@@ -115,7 +136,7 @@ function updateHero(movie) {
     
     const backdrop = movie.backdrop_path 
         ? `${BACKDROP_BASE}${movie.backdrop_path}` 
-        : 'https://via.placeholder.com/1920x1080/1a1a1a/333?text=Sin+Imagen';
+        : 'https://via.placeholder.com/1920x1080/1a1a1a/333?text=SamoaTV';
     
     hero.style.backgroundImage = `url(${backdrop})`;
     heroTitle.textContent = movie.title;
@@ -128,7 +149,7 @@ async function openModal(movieId) {
 
     const poster = movie.poster_path 
         ? `${IMG_BASE}${movie.poster_path}` 
-        : 'https://via.placeholder.com/400x600/1a1a1a/666?text=Sin+Imagen';
+        : 'https://via.placeholder.com/400x600/1a1a1a/666?text=No+Image';
 
     const genres = movie.genres ? movie.genres.map(g => g.name).join(', ') : 'N/A';
     const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
@@ -158,6 +179,9 @@ function closeModalFn() {
     document.body.style.overflow = 'auto';
 }
 
+// ============================================================
+// FUNCIONES DE NAVEGACIÓN
+// ============================================================
 async function loadCategory(category) {
     currentCategory = category;
     
@@ -179,8 +203,52 @@ async function loadCategory(category) {
         };
         renderMovies(movies, titles[category] || 'Películas');
     }
+
+    // Cerrar menú móvil al seleccionar
+    if (navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+    }
 }
 
+// ============================================================
+// FUNCIONES DE BÚSQUEDA
+// ============================================================
+function performSearch() {
+    const query = searchInput.value.trim() || searchInputMobile.value.trim();
+    if (!query) {
+        loadCategory(currentCategory);
+        return;
+    }
+    
+    searchMovies(query).then(results => {
+        renderMovies(results, `Resultados para: "${query}"`);
+        if (results.length > 0) {
+            updateHero(results[0]);
+        }
+        // Cerrar menú móvil
+        if (navMenu.classList.contains('open')) {
+            navMenu.classList.remove('open');
+        }
+    });
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+// Menú hamburguesa
+menuToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('open');
+});
+
+// Cerrar menú al hacer clic fuera
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.header')) {
+        navMenu.classList.remove('open');
+    }
+});
+
+// Navegación
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -188,44 +256,33 @@ navLinks.forEach(link => {
         if (category) {
             loadCategory(category);
             searchInput.value = '';
+            searchInputMobile.value = '';
         }
     });
 });
 
-searchBtn.addEventListener('click', async () => {
-    const query = searchInput.value.trim();
-    if (!query) {
-        loadCategory(currentCategory);
-        return;
-    }
-    
-    const results = await searchMovies(query);
-    renderMovies(results, `Resultados para: "${query}"`);
-    
-    if (results.length > 0) {
-        updateHero(results[0]);
-    }
-});
-
+// Búsqueda desktop
+searchBtn.addEventListener('click', performSearch);
 searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        searchBtn.click();
-    }
+    if (e.key === 'Enter') performSearch();
 });
 
+// Búsqueda móvil
+searchBtnMobile.addEventListener('click', performSearch);
+searchInputMobile.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+});
+
+// Modal
 closeModal.addEventListener('click', closeModalFn);
 modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        closeModalFn();
-    }
+    if (e.target === modal) closeModalFn();
 });
-
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeModalFn();
-    }
+    if (e.key === 'Escape') closeModalFn();
 });
 
+// Scroll - Header y botón subir
 window.addEventListener('scroll', () => {
     const header = document.querySelector('.header');
     if (window.scrollY > 50) {
@@ -233,6 +290,21 @@ window.addEventListener('scroll', () => {
     } else {
         header.classList.remove('scrolled');
     }
+
+    // Botón subir
+    if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('show');
+    } else {
+        scrollTopBtn.classList.remove('show');
+    }
 });
 
+// Botón subir
+scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
 loadCategory('popular');
