@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SamoaTV - Tu plataforma de streaming</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <span>Samoa<span class="highlight">TV</span></span>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#" class="active" data-category="popular">Popular</a></li>
+                    <li><a href="#" data-category="top_rated">Mejor valoradas</a></li>
+                    <li><a href="#" data-category="upcoming">Próximamente</a></li>
+                </ul>
+            </nav>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar películas..." />
+                <button id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1 id="heroTitle">Película Destacada</h1>
+            <p id="heroOverview">Descripción de la película destacada...</p>
+            <div class="hero-buttons">
+                <button class="btn-primary"><i class="fas fa-play"></i> Ver ahora</button>
+                <button class="btn-secondary"><i class="fas fa-info-circle"></i> Más info</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="movies-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 id="categoryTitle">Películas Populares</h2>
+                <span class="view-all">Ver todas <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="movies-grid" id="moviesGrid"></div>
+        </div>
+    </section>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
