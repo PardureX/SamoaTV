@@ -2,34 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>SamoaTV - Tu plataforma de streaming</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
+    <!-- HEADER MEJORADO PARA MÓVIL -->
     <header class="header">
         <div class="container">
             <div class="logo">
                 <i class="fas fa-film"></i>
                 <span>Samoa<span class="highlight">TV</span></span>
             </div>
-            <nav class="nav">
+            <!-- Menú hamburguesa para móvil -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="nav" id="navMenu">
                 <ul>
                     <li><a href="#" class="active" data-category="popular">Popular</a></li>
                     <li><a href="#" data-category="top_rated">Mejor valoradas</a></li>
                     <li><a href="#" data-category="upcoming">Próximamente</a></li>
                 </ul>
+                <!-- Buscador móvil dentro del menú -->
+                <div class="search-box-mobile">
+                    <input type="text" id="searchInputMobile" placeholder="Buscar películas..." />
+                    <button id="searchBtnMobile"><i class="fas fa-search"></i></button>
+                </div>
             </nav>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Buscar películas..." />
+                <input type="text" id="searchInput" placeholder="Buscar..." />
                 <button id="searchBtn"><i class="fas fa-search"></i></button>
             </div>
         </div>
     </header>
 
+    <!-- HERO MEJORADO PARA MÓVIL -->
     <section class="hero" id="hero">
         <div class="hero-content">
+            <span class="hero-badge">Destacado</span>
             <h1 id="heroTitle">Película Destacada</h1>
             <p id="heroOverview">Descripción de la película destacada...</p>
             <div class="hero-buttons">
@@ -37,8 +49,10 @@
                 <button class="btn-secondary"><i class="fas fa-info-circle"></i> Más info</button>
             </div>
         </div>
+        <div class="hero-gradient"></div>
     </section>
 
+    <!-- SECCIÓN DE PELÍCULAS -->
     <section class="movies-section">
         <div class="container">
             <div class="section-header">
@@ -49,12 +63,18 @@
         </div>
     </section>
 
+    <!-- MODAL MEJORADO -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
+
+    <!-- BOTÓN PARA SUBIR (MÓVIL) -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 
     <script src="script.js"></script>
 </body>
